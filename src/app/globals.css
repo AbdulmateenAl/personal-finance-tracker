@@ -2,32 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
+@layer base {
+    body {
+        @apply text-white bg-slate-900;
+    }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
+    button {
+        @apply transition-all duration-100 hover:scale-110;
+    }
+    /* self-start makes the button have it normal with instead of the whole column if you use flex */
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    input {
+        @apply p-2 rounded-2xl bg-slate-600;
+    }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+    .btn {
+        @apply self-start px-4 py-2 text-sm capitalize rounded-xl;
+    }
+
+    .btn-primary {
+        @apply border bg-slate-700 border-slate-700 text-lime-400;
+    }
+
+    .btn-primary-outline {
+        @apply border border-lime-400 text-lime-400;
+    }
+    
+    .btn-danger {
+        @apply bg-red-600 text-white border-red-600;
+    }
 }
