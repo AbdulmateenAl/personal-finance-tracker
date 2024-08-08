@@ -73,30 +73,29 @@ export default function Home() {
           },
         ]
       })
+      amountRef.current.value = "";
+      descriptionRef.current.value = "";
+      console.log(income);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   };
 
-  // useEffect(() => {
-  //   const getIncomeData = async () => {
-  //     const collectionRef = collection(db, "income");
-  //     const docsSnap = await getDocs(collectionRef);
-
-  //     const data = docsSnap.docs.map((doc) => {
-  //       return {
-  //         id: doc.id,
-  //         ...doc.data(),
-  //         createdAt: new Date(doc.data().createdAt.toMillis()),
-  //       };
-  //     });
-
-  //     setIncome(data);
-  //     console.log(income);
-  //   };
-
-  //   getIncomeData();
-  // }, []);
+  useEffect(() => {
+    const getIncomeData = async () => {
+      const querySnapShot = await getDocs(collection(db, "income"));
+      console.log(querySnapShot.docs);
+      // const data = querySnapShot.map((docs) => {
+      //   return {
+      //     id: docs.id,
+      //     ...docs.data(),
+      //     createdAt: new Date(docs.data().createdAt.toMillis()),
+      //   };
+      // });
+      // setIncome(data);
+    }
+    getIncomeData();
+  }, []);
   
   return (
     <>
@@ -110,10 +109,23 @@ export default function Home() {
           <input name="description" ref={descriptionRef} type="text" placeholder='Enter income description' required />
           <button className='mt-2 btn btn-primary'>Add Entry</button>
         </div>
-        <div className='flex f;ex-col gap-4 mt-6'>
-          <h3 className='font-bold text-2xl capitalize'>Income History</h3>
-        </div>
       </form>
+      <div className='flex f;ex-col gap-4 mt-6'>
+        <h3 className='font-bold text-2xl capitalize'>Income History</h3>
+        {/* {income.map((i) => {
+          return (
+            <div className='flex flex-row justify-between' key={i.id}>
+              <div>
+                <p>{i.description}</p>
+                <small>{i.createdAt}</small>
+              </div>
+              <div>
+                <p>{currencyFormatter(i.amount)}</p>
+              </div>
+            </div>
+          );
+        })} */}
+      </div>
     </Modal> 
     <main className="container max-w-2xl px-6 mx-auto">
       {/* Balance section */}
