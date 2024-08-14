@@ -3,11 +3,13 @@ import {currencyFormatter} from '@/app/lib/utils';
 import ExpenseCategoryItem from '@/app/components/ExpenseCategoryItem';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+
+import { MdDeleteOutline } from "react-icons/md";
+
 import { useState, useRef, useEffect } from 'react';
 import Modal from '@/app/components/Modal';
 import { db } from '@/app/lib/firebase/index';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
-
+import { collection, addDoc, getDocs, doc, deleteDoc } from 'firebase/firestore';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -51,7 +53,9 @@ export default function Home() {
   const amountRef = useRef();
   const descriptionRef = useRef();
 
-  // Handler Functions
+  console.log(income);
+
+  // Add Handler Functions
   const addIncomeHandler = async (e) => {
     e.preventDefault();
 
@@ -75,24 +79,31 @@ export default function Home() {
       })
       amountRef.current.value = "";
       descriptionRef.current.value = "";
-      console.log(income);
     } catch (e) {
       console.error("Error adding document: ", e);
+    }
+  };
+
+  // Delete Handler function
+  const deleteIncomeHandler = async (handlerID) => {
+    try {
+      await deleteDoc(doc(db, "income", handlerID));
+    } catch (error) {
+      console.error(error.message);
     }
   };
 
   useEffect(() => {
     const getIncomeData = async () => {
       const querySnapShot = await getDocs(collection(db, "income"));
-      console.log(querySnapShot.docs);
-      // const data = querySnapShot.map((docs) => {
-      //   return {
-      //     id: docs.id,
-      //     ...docs.data(),
-      //     createdAt: new Date(docs.data().createdAt.toMillis()),
-      //   };
-      // });
-      // setIncome(data);
+      const data = querySnapShot.docs.map((docs) => {
+        return {
+          id: docs.id,
+          ...docs.data(),
+          createdAt: new Date(docs.data().createdAt.toMillis()),
+        };
+      });
+      setIncome(data);
     }
     getIncomeData();
   }, []);
@@ -102,7 +113,7 @@ export default function Home() {
     {/* Show Income Modal */}
     <Modal show={showAddIncomeModal} onClose={setShowAddIncomeModal}>
       <form onSubmit={addIncomeHandler} action="">
-        <div className='flex flex-col gap-2 py-3'>
+        <div className='flex flex-col flex-grow gap-2 py-3'>
           <label htmlFor="amount">Income Amount</label>
           <input name="amount" ref={amountRef} type="number" min={0.01} step={0.01} placeholder='Enter income amount' required />
           <label className='mt-2' htmlFor="description">Description</label>
@@ -110,21 +121,22 @@ export default function Home() {
           <button className='mt-2 btn btn-primary'>Add Entry</button>
         </div>
       </form>
-      <div className='flex f;ex-col gap-4 mt-6'>
+      <div className='flex flex-col gap-4 mt-6'>
         <h3 className='font-bold text-2xl capitalize'>Income History</h3>
-        {/* {income.map((i) => {
+        {income.map((i) => {
           return (
-            <div className='flex flex-row justify-between' key={i.id}>
+            <div className='flex items-center justify-between' key={i.id}>
               <div>
                 <p>{i.description}</p>
-                <small>{i.createdAt}</small>
+                <small>now</small>
               </div>
-              <div>
+              <div className='flex items-center justify-center gap-2'>
                 <p>{currencyFormatter(i.amount)}</p>
+                <button onClick={() => { deleteIncomeHandler(i.id) }}><MdDeleteOutline /></button>
               </div>
             </div>
           );
-        })} */}
+        })}
       </div>
     </Modal> 
     <main className="container max-w-2xl px-6 mx-auto">
