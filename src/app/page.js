@@ -3,13 +3,9 @@ import {currencyFormatter} from '@/app/lib/utils';
 import ExpenseCategoryItem from '@/app/components/ExpenseCategoryItem';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import { useState } from 'react';
 
-import { MdDeleteOutline } from "react-icons/md";
-
-import { useState, useRef, useEffect } from 'react';
-import Modal from '@/app/components/Modal';
-import { db } from '@/app/lib/firebase/index';
-import { collection, addDoc, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import AddIncomeModal from '@/app/Modals/AddIncomeModal'
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -48,97 +44,11 @@ const Dummy_data = [
 
 export default function Home() {
 
-  const [income, setIncome] = useState([]);
   const [showAddIncomeModal, setShowAddIncomeModal] = useState(false);
-  const amountRef = useRef();
-  const descriptionRef = useRef();
-
-  console.log(income);
-
-  // Add Handler Functions
-  const addIncomeHandler = async (e) => {
-    e.preventDefault();
-
-    const newIncome = {
-      amount: amountRef.current.value,
-      description: descriptionRef.current.value,
-      createdAt: new Date(),
-    }
-    try {
-      const docRef = await addDoc(collection(db, "income"), newIncome);
-      console.log("Document written with ID: ", docRef.id);
-      // Update state
-      setIncome((prevState) => {
-        return [
-          ...prevState,
-          {
-            id: docRef.id,
-            ...newIncome,
-          },
-        ]
-      })
-      amountRef.current.value = "";
-      descriptionRef.current.value = "";
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  };
-
-  // Delete Handler function
-  const deleteIncomeHandler = async (handlerID) => {
-    try {
-      await deleteDoc(doc(db, "income", handlerID));
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
-  useEffect(() => {
-    const getIncomeData = async () => {
-      const querySnapShot = await getDocs(collection(db, "income"));
-      const data = querySnapShot.docs.map((docs) => {
-        return {
-          id: docs.id,
-          ...docs.data(),
-          createdAt: new Date(docs.data().createdAt.toMillis()),
-        };
-      });
-      setIncome(data);
-    }
-    getIncomeData();
-  }, []);
   
   return (
     <>
-    {/* Show Income Modal */}
-    <Modal show={showAddIncomeModal} onClose={setShowAddIncomeModal}>
-      <form onSubmit={addIncomeHandler} action="">
-        <div className='flex flex-col flex-grow gap-2 py-3'>
-          <label htmlFor="amount">Income Amount</label>
-          <input name="amount" ref={amountRef} type="number" min={0.01} step={0.01} placeholder='Enter income amount' required />
-          <label className='mt-2' htmlFor="description">Description</label>
-          <input name="description" ref={descriptionRef} type="text" placeholder='Enter income description' required />
-          <button className='mt-2 btn btn-primary'>Add Entry</button>
-        </div>
-      </form>
-      <div className='flex flex-col gap-4 mt-6'>
-        <h3 className='font-bold text-2xl capitalize'>Income History</h3>
-        {income.map((i) => {
-          return (
-            <div className='flex items-center justify-between' key={i.id}>
-              <div>
-                <p>{i.description}</p>
-                <small>now</small>
-              </div>
-              <div className='flex items-center justify-center gap-2'>
-                <p>{currencyFormatter(i.amount)}</p>
-                <button onClick={() => { deleteIncomeHandler(i.id) }}><MdDeleteOutline /></button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </Modal> 
+    <AddIncomeModal show={showAddIncomeModal} onClose={setShowAddIncomeModal} />
     <main className="container max-w-2xl px-6 mx-auto">
       {/* Balance section */}
       <section className="py-2">
