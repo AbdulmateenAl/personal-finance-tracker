@@ -8,12 +8,14 @@ import { useContext, useState, useEffect } from 'react';
 import {financeContext } from '@/app/lib/store/finance-context'
 
 import AddIncomeModal from '@/app/Modals/AddIncomeModal'
+import AddExpenseModal from '@/app/Modals/AddExpenseModal'
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function Home() {
 
   const [showAddIncomeModal, setShowAddIncomeModal] = useState(false);
+  const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
   const [ balance, setBalance ] = useState(0);
   const { expenses, income } = useContext(financeContext);
 
@@ -25,6 +27,7 @@ export default function Home() {
   return (
     <>
     <AddIncomeModal show={showAddIncomeModal} onClose={setShowAddIncomeModal} />
+    <AddExpenseModal show={showAddExpenseModal} onClose={setShowAddExpenseModal} />
     <main className="container max-w-2xl px-6 mx-auto">
       {/* Balance section */}
       <section className="py-2">
@@ -34,7 +37,7 @@ export default function Home() {
 
       {/* Button */}
       <section className="flex item-center gap-2 py-3">
-        <button onClick={() => {  }} className="btn btn-primary">Expenses</button>
+        <button onClick={() => { setShowAddExpenseModal(true) }} className="btn btn-primary">Expenses</button>
         <button onClick={() => { setShowAddIncomeModal(true) }} className="btn btn-primary-outline">Income</button>
       </section>
 
