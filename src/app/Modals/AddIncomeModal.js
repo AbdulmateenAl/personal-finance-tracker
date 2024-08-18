@@ -20,10 +20,8 @@ function AddIncomeModal({ show, onClose }) {
     const addIncomeHandler = async (e) => {
         e.preventDefault();
         const currentTimestamp = new Date();
-
-        console.log(currentTimestamp.toLocaleString()); 
         const newIncome = {
-          amount: amountRef.current.value,
+          amount: +amountRef.current.value,
           description: descriptionRef.current.value,
           createdAt: currentTimestamp.toLocaleString(),
         }

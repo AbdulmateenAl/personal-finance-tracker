@@ -3,48 +3,24 @@ import {currencyFormatter} from '@/app/lib/utils';
 import ExpenseCategoryItem from '@/app/components/ExpenseCategoryItem';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
+
+import {financeContext } from '@/app/lib/store/finance-context'
 
 import AddIncomeModal from '@/app/Modals/AddIncomeModal'
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const Dummy_data = [
-  {
-    id: 1,
-    color: 'white',
-    title: 'Entertainment',
-    total: 20,
-  },
-  {
-    id: 2,
-    color: 'yellow',
-    title: 'Data',
-    total: 10,
-  },
-  {
-    id: 3,
-    color: 'red',
-    title: 'Food',
-    total: 50,
-  },
-  {
-    id: 4,
-    color: 'pink',
-    title: 'Clothes',
-    total: 70,
-  },
-  {
-    id: 5,
-    color: 'purple',
-    title: 'Fuel',
-    total: 50,
-  },
-]
-
 export default function Home() {
 
   const [showAddIncomeModal, setShowAddIncomeModal] = useState(false);
+  const [ balance, setBalance ] = useState(0);
+  const { expenses, income } = useContext(financeContext);
+
+  useEffect(() => {
+    const newBalance = income.reduce((total, i) => { return total + i.amount }, 0) - expenses.reduce((total, e) => { return total + e.total }, 0);
+    setBalance(newBalance);
+  }, [ expenses, income ]);
   
   return (
     <>
@@ -53,7 +29,7 @@ export default function Home() {
       {/* Balance section */}
       <section className="py-2">
         <small className="text-gray-400 text-md">My Balance</small>
-        <h2 className="text-4xl font-bold">{ currencyFormatter(952) }</h2>
+        <h2 className="text-4xl font-bold">{ currencyFormatter(balance) }</h2>
       </section>
 
       {/* Button */}
@@ -67,7 +43,7 @@ export default function Home() {
         <h2 className='text-2xl'>My Expenses</h2>
         <div className='flex flex-col gap-4 mt-6'>
           {/* Expense Item */}
-          {Dummy_data.map((expense) => {
+          {expenses.map((expense) => {
             return (
             <ExpenseCategoryItem
               key={expense.id}
@@ -83,12 +59,12 @@ export default function Home() {
           <h3 className='text-2xl'>Stats</h3>
           <div className='w-1/2 mx-auto'>
           <Doughnut data={{
-            labels: Dummy_data.map(expense => expense.title),
+            labels: expenses.map(expense => expense.title),
             datasets: [
               {
                 label: 'Expenses',
-                data: Dummy_data.map(expense => expense.total),
-                backgroundColor: Dummy_data.map(expense => expense.color),
+                data: expenses.map(expense => expense.total),
+                backgroundColor: expenses.map(expense => expense.color),
                 borderColor: ['#10101b'],
                 borderWidth: 5,
               }

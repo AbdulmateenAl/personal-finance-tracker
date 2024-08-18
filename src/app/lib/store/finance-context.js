@@ -62,7 +62,7 @@ export default function FinanceContextProvider({ children }) {
           });
           setIncome(data);
         };
-
+        
         const getExpensesData = async () => {
           const querySnapShot = await getDocs(collection(db, "expenses"));
           const data = querySnapShot.docs.map((exp) => {
@@ -73,10 +73,10 @@ export default function FinanceContextProvider({ children }) {
           });
           setExpenses(data);
         };
-        console.log(expenses);
-
-        getExpensesData();
+        
         getIncomeData();
+        getExpensesData();
+        
       }, []);
     
     return <financeContext.Provider value={values}>
