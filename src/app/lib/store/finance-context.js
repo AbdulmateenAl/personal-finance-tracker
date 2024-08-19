@@ -10,6 +10,7 @@ export const financeContext = createContext({
     expenses: [],
     addIncomeItem: async () => {},
     removeIncomeItem: async () => {},
+    addExpenseItem: async () => {},
 });
 
 export default function FinanceContextProvider({ children }) {
@@ -30,13 +31,32 @@ export default function FinanceContextProvider({ children }) {
                   ...newIncome,
                 },
               ]
-            })
+            });
           } catch (error) {
             console.error("Error adding document: ", e);
             throw e;
           }
+        };
+        
+    const addExpenseItem = async (newExpense) => {
+      try {
+        const docRef = await addDoc(collection(db, "expenses"), newExpense);
+        console.log("Document written with ID: ", docRef.id);
+        setExpenses((prevState) => {
+          return [
+            ...prevState,
+            {
+              id: docRef.id,
+              ...newExpense,
+            },
+          ]
+        });
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        throw error;
+      }
     };
-
+        
     const removeIncomeItem = async (handlerId) => {
         try {
             await deleteDoc(doc(db, "income", handlerId));
@@ -49,7 +69,7 @@ export default function FinanceContextProvider({ children }) {
           }
     };
 
-    const values = { income, expenses, addIncomeItem, removeIncomeItem }
+    const values = { income, expenses, addIncomeItem, removeIncomeItem, addExpenseItem }
 
     useEffect(() => {
         const getIncomeData = async () => {
