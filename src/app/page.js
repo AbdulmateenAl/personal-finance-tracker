@@ -5,10 +5,11 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { useContext, useState, useEffect } from 'react';
 
-import {financeContext } from '@/app/lib/store/finance-context'
+import {financeContext } from '@/app/lib/store/finance-context';
 
-import AddIncomeModal from '@/app/Modals/AddIncomeModal'
-import AddExpenseModal from '@/app/Modals/AddExpenseModal'
+import AddIncomeModal from '@/app/Modals/AddIncomeModal';
+import AddExpenseModal from '@/app/Modals/AddExpenseModal';
+import ViewExpense from '@/app/Modals/ViewExpense';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -16,8 +17,15 @@ export default function Home() {
 
   const [showAddIncomeModal, setShowAddIncomeModal] = useState(false);
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+  const [viewExpenseModal, setViewExpenseModal] = useState(false);
   const [ balance, setBalance ] = useState(0);
   const { expenses, income } = useContext(financeContext);
+
+  const ViewExpense = () => {
+    return (
+      <ViewExpense show={viewExpenseModal} onClose={setViewExpenseModal} />
+    )
+  };
 
   useEffect(() => {
     const newBalance = income.reduce((total, i) => { return total + i.amount }, 0) - expenses.reduce((total, e) => { return total + e.total }, 0);
@@ -52,7 +60,8 @@ export default function Home() {
               key={expense.id}
               color={expense.color}
               title={expense.title}
-              total={expense.total}/>
+              total={expense.total}
+              onClick={ViewExpense}/>
           );
           })}
         </div>
