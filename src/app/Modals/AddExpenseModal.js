@@ -4,15 +4,17 @@ import { financeContext } from '../lib/store/finance-context';
 import Modal from '../components/Modal';
 import { currencyFormatter } from '../lib/utils';
 
+import { v4 as uuidv4 } from 'uuid';
+
 function AddExpenseModal({show, onClose}){
 
     const [showNewCategory, setShowNewCategory] = useState(false);
-    const [clickedExpense, setClickedExpense] = useState();
+    const [clickedExpense, setClickedExpense] = useState(null);
     // const totalRef = useRef();
-    const [expenseTotal, setExpenseTotal] = useState();
+    const [expenseAmount, setExpenseAmount] = useState("");
     const colorRef = useRef();
     const titleRef = useRef();
-    const { expenses, addExpenseItem } = useContext(financeContext);
+    const { expenses, addExpenseItem, updateExpenseItem } = useContext(financeContext);
 
     const addExpenseHandler = async (e) => {
         e.preventDefault();
@@ -20,7 +22,8 @@ function AddExpenseModal({show, onClose}){
         const newExpenses = {
             color: colorRef.current.value,
             title: titleRef.current.value,
-            total: +expenseTotal,
+            total: 0,
+            items: [],
         }
 
         try {
@@ -33,13 +36,33 @@ function AddExpenseModal({show, onClose}){
         }
     }
 
-    const addExpense = (expense_id) => {
-        for (let i = 0; i < expenses.length; i++) {
-            if (expenses[i].id === expense_id) {
-                expenses.total =+ expenseTotal;
-            }
+    const addExpense = () => {
+        const expense = expenses.find(e => {
+            return e.id === clickedExpense;
+        });
+
+        const newExpense = {
+            color: expense.color,
+            title: expense.title,
+            total: expense.total + +expenseAmount,
+            items: [
+                ...expense.items,
+                {
+                    amount: +expenseAmount,
+                    createdAt: new Date().toLocaleDateString(),
+                    id: uuidv4(),
+                }
+            ]
         }
-    }
+        try {
+            updateExpenseItem( clickedExpense, newExpense);
+            setExpenseAmount("");
+            setShowNewCategory(null);
+            onClose();
+        } catch (error) {
+            throw error;
+        }
+    };
     
     return (
         <Modal show={show} onClose={onClose}>
@@ -48,9 +71,9 @@ function AddExpenseModal({show, onClose}){
                     <p>Enter an amount, and then select a category...</p>
                 </div>
                 <div className='py-2'>
-                    <input onChange={(e) => setExpenseTotal(e.target.value)} className='w-full' type='number' placeholder='Enter expense amount' min={0.01} step={0.01} required/>
+                    <input onChange={(e) => setExpenseAmount(e.target.value)} className='w-full' type='number' value={expenseAmount} placeholder='Enter expense amount' min={0.01} step={0.01} required/>
                 </div>
-                {expenseTotal > 0 && (
+                {expenseAmount > 0 && (
                     <div>
                         <div className='flex flex-row justify-between py-5'>
                             <h2 className='text-xl'>Select Expense Category</h2>
@@ -60,7 +83,7 @@ function AddExpenseModal({show, onClose}){
                             <div className="flex flex-row items-center gap-2 p-3">
                                 <input name="title" ref={titleRef} className="" type="text" placeholder="Enter Title" required/>
                                 <p>Pick Color</p>
-                                <input className="p-2" ref={colorRef} name="color" type="color" required/>
+                                <input className="w-24 h-10 p-2" ref={colorRef} name="color" type="color" required/>
                                 <div className="flex fle-row gap-2">
                                     <button onClick={addExpenseHandler} className="btn btn-primary-outline">Create</button>
                                     <button onClick={() => setShowNewCategory(false)} className="btn btn-danger">Cancel</button>
@@ -80,8 +103,8 @@ function AddExpenseModal({show, onClose}){
                                     </button>
                                 )
                             })}
-                            {clickedExpense && (
-                                <button onClick={() => addExpense(clickedExpense)} className='btn btn-primary'>Add Expense</button>
+                            {expenseAmount > 0 && clickedExpense && (
+                                <button onClick={() => addExpense()} className='btn btn-primary'>Add Expense</button>
                             )}
                         </div>
 

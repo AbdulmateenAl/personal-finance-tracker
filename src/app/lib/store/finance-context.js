@@ -3,7 +3,7 @@
 import { useState, createContext, useEffect } from "react";
 
 import { db } from '@/app/lib/firebase/index';
-import { collection, addDoc, getDocs, doc, deleteDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 
 export const financeContext = createContext({
     income: [],
@@ -11,6 +11,7 @@ export const financeContext = createContext({
     addIncomeItem: async () => {},
     removeIncomeItem: async () => {},
     addExpenseItem: async () => {},
+    updateExpenseItem: async () => {},
 });
 
 export default function FinanceContextProvider({ children }) {
@@ -56,6 +57,25 @@ export default function FinanceContextProvider({ children }) {
         throw error;
       }
     };
+
+    const updateExpenseItem = async (expense_id, newExpense) => {
+      const docRef = doc(db, 'expenses', expense_id);
+
+      try {
+        await updateDoc(docRef, {...newExpense});
+
+        setExpenses((prevState) => {
+          const updatedExpenses = [...prevState];
+          const foundIndex = updatedExpenses.find((e) => {
+            return e.id === expense_id;
+          });
+          updatedExpenses[foundIndex] = { id: expense_id, ...newExpense };
+          return updatedExpenses;
+        })
+      } catch (error) {
+        throw error;
+      }
+    };
         
     const removeIncomeItem = async (handlerId) => {
         try {
@@ -69,7 +89,7 @@ export default function FinanceContextProvider({ children }) {
           }
     };
 
-    const values = { income, expenses, addIncomeItem, removeIncomeItem, addExpenseItem }
+    const values = { income, expenses, addIncomeItem, removeIncomeItem, addExpenseItem, updateExpenseItem }
 
     useEffect(() => {
         const getIncomeData = async () => {
