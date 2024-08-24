@@ -7,3 +7,5 @@ function ViewExpense({show, onClose}) {
         </Modal>
     )
 }
+
+export default ViewExpense;

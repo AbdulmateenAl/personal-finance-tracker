@@ -21,12 +21,6 @@ export default function Home() {
   const [ balance, setBalance ] = useState(0);
   const { expenses, income } = useContext(financeContext);
 
-  const ViewExpense = () => {
-    return (
-      <ViewExpense show={viewExpenseModal} onClose={setViewExpenseModal} />
-    )
-  };
-
   useEffect(() => {
     const newBalance = income.reduce((total, i) => { return total + i.amount }, 0) - expenses.reduce((total, e) => { return total + e.total }, 0);
     setBalance(newBalance);
@@ -36,6 +30,7 @@ export default function Home() {
     <>
     <AddIncomeModal show={showAddIncomeModal} onClose={setShowAddIncomeModal} />
     <AddExpenseModal show={showAddExpenseModal} onClose={setShowAddExpenseModal} />
+    <ViewExpense show={viewExpenseModal} onClose={setViewExpenseModal} />
     <main className="container max-w-2xl px-6 mx-auto">
       {/* Balance section */}
       <section className="py-2">
@@ -61,7 +56,7 @@ export default function Home() {
               color={expense.color}
               title={expense.title}
               total={expense.total}
-              onClick={ViewExpense}/>
+              onClick={() => {setViewExpenseModal(true)}}/>
           );
           })}
         </div>
