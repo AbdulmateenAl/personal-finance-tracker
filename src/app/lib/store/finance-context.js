@@ -4,6 +4,7 @@ import { useState, createContext, useEffect } from "react";
 
 import { db } from '@/app/lib/firebase/index';
 import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { it } from "node:test";
 
 export const financeContext = createContext({
     income: [],
@@ -12,6 +13,8 @@ export const financeContext = createContext({
     removeIncomeItem: async () => {},
     addExpenseItem: async () => {},
     updateExpenseItem: async () => {},
+    removeExpenseCategory: async () => {},
+    removeExpenseItem: async () => {},
 });
 
 export default function FinanceContextProvider({ children }) {
@@ -89,7 +92,37 @@ export default function FinanceContextProvider({ children }) {
           }
     };
 
-    const values = { income, expenses, addIncomeItem, removeIncomeItem, addExpenseItem, updateExpenseItem }
+    const removeExpenseCategory = async (expense_id) => {
+      try {
+        await deleteDoc(doc(db, "expenses", expense_id))
+        setExpenses((prevState) => {
+          return prevState.filter((e) => e.id !== expense_id)
+        })
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    } ;
+
+    const removeExpenseItem = async (newItem, itemId) => {
+      const docRef = doc(db, "expenses", itemId);
+      try {
+        await updateDoc(docRef, {...newItem});
+        setExpenses((prevState) => {
+          const updatedExpenses = [...prevState];
+          const pos = updatedExpenses.findIndex((ex) => ex.id === itemId);
+          updatedExpenses[pos].items = [...updatedExpenses.items];
+          updatedExpenses[pos].total = updatedExpenses.total;
+
+          return updatedExpenses;
+        })
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    }
+
+    const values = { income, expenses, addIncomeItem, removeIncomeItem, removeExpenseItem, removeExpenseCategory, addExpenseItem, updateExpenseItem }
 
     useEffect(() => {
         const getIncomeData = async () => {

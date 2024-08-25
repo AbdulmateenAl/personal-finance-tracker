@@ -17,7 +17,6 @@ export default function Home() {
 
   const [showAddIncomeModal, setShowAddIncomeModal] = useState(false);
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
-  const [viewExpenseModal, setViewExpenseModal] = useState(false);
   const [ balance, setBalance ] = useState(0);
   const { expenses, income } = useContext(financeContext);
 
@@ -30,7 +29,6 @@ export default function Home() {
     <>
     <AddIncomeModal show={showAddIncomeModal} onClose={setShowAddIncomeModal} />
     <AddExpenseModal show={showAddExpenseModal} onClose={setShowAddExpenseModal} />
-    <ViewExpense show={viewExpenseModal} onClose={setViewExpenseModal} />
     <main className="container max-w-2xl px-6 mx-auto">
       {/* Balance section */}
       <section className="py-2">
@@ -53,10 +51,8 @@ export default function Home() {
             return (
             <ExpenseCategoryItem
               key={expense.id}
-              color={expense.color}
-              title={expense.title}
-              total={expense.total}
-              onClick={() => {setViewExpenseModal(true)}}/>
+              expense={expense}
+            />
           );
           })}
         </div>

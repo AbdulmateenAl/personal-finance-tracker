@@ -80,11 +80,13 @@ function AddExpenseModal({show, onClose}){
                             <button onClick={() => setShowNewCategory(true)} className='btn text-lime-500'>+ New Category</button>
                         </div>
                         {showNewCategory && (
-                            <div className="flex flex-row items-center gap-2 p-3">
-                                <input name="title" ref={titleRef} className="" type="text" placeholder="Enter Title" required/>
-                                <p>Pick Color</p>
-                                <input className="w-24 h-10 p-2" ref={colorRef} name="color" type="color" required/>
-                                <div className="flex fle-row gap-2">
+                            <div className="flex flex-col items-center gap-4 p-3 md:gap-2 md:flex-row">
+                                <input name="title" ref={titleRef} className="w-full" type="text" placeholder="Enter Title" required/>
+                                <div className='flex flex-row gap-2 items-center w-full'>
+                                    <p>Pick Color</p>
+                                    <input className="w-24 h-10 p-2" ref={colorRef} name="color" type="color" required/>
+                                </div>
+                                <div className="flex fle-row gap-2 w-full">
                                     <button onClick={addExpenseHandler} className="btn btn-primary-outline">Create</button>
                                     <button onClick={() => setShowNewCategory(false)} className="btn btn-danger">Cancel</button>
                                 </div>
