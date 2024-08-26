@@ -4,7 +4,7 @@ import { useState, createContext, useEffect } from "react";
 
 import { db } from '@/app/lib/firebase/index';
 import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { it } from "node:test";
+// import { it } from "node:test";
 
 export const financeContext = createContext({
     income: [],
@@ -111,8 +111,8 @@ export default function FinanceContextProvider({ children }) {
         setExpenses((prevState) => {
           const updatedExpenses = [...prevState];
           const pos = updatedExpenses.findIndex((ex) => ex.id === itemId);
-          updatedExpenses[pos].items = [...updatedExpenses.items];
-          updatedExpenses[pos].total = updatedExpenses.total;
+          updatedExpenses[pos].items = [...newItem.items];
+          updatedExpenses[pos].total = newItem.total;
 
           return updatedExpenses;
         })
@@ -120,7 +120,7 @@ export default function FinanceContextProvider({ children }) {
         console.log(error);
         throw error;
       }
-    }
+    };
 
     const values = { income, expenses, addIncomeItem, removeIncomeItem, removeExpenseItem, removeExpenseCategory, addExpenseItem, updateExpenseItem }
 

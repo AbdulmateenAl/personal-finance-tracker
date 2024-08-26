@@ -24,8 +24,9 @@ function ViewExpense({show, onClose, expense}) {
             const updatedItems = expense.items.filter((i) => i.id !== item.id);
             const updatedExpense = {
                 items: [...updatedItems],
-                total: expense.total -items.amount,
+                total: expense.total - item.amount,
             };
+            await removeExpenseItem(updatedExpense, expense.id);
         } catch (error) {
             throw error;
         }
