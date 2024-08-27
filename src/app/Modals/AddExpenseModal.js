@@ -5,6 +5,7 @@ import Modal from '../components/Modal';
 import { currencyFormatter } from '../lib/utils';
 
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'react-toastify';
 
 function AddExpenseModal({show, onClose}){
 
@@ -30,9 +31,10 @@ function AddExpenseModal({show, onClose}){
             await addExpenseItem(newExpenses);
             colorRef.current.value = '';
             titleRef.current.value = '';
-
+            toast.success("Category created!")
         } catch (error) {
             console.error(error);
+            toast.error(error.message);
         }
     }
 
@@ -59,8 +61,10 @@ function AddExpenseModal({show, onClose}){
             setExpenseAmount("");
             setShowNewCategory(null);
             onClose();
+            toast.success("Expense item added!");
         } catch (error) {
-            throw error;
+            console.log(error.message);
+            toast.error(error.message);
         }
     };
     

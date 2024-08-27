@@ -13,9 +13,11 @@ function ViewExpense({show, onClose, expense}) {
 
     const deleteExpense = async (expenseId) => {
         try {
-            removeExpenseCategory(expenseId)
+            removeExpenseCategory(expenseId);
+            toast.success("Expense deleted!");
         } catch (error) {
             console.log(error);
+            toast.error(error.message);
         }
     };
 
@@ -27,8 +29,10 @@ function ViewExpense({show, onClose, expense}) {
                 total: expense.total - item.amount,
             };
             await removeExpenseItem(updatedExpense, expense.id);
+            toast.success("Item deleted!");
         } catch (error) {
-            throw error;
+            console.log(error);
+            toast.error(error.message);
         }
     }
 

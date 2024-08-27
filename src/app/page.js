@@ -4,12 +4,13 @@ import ExpenseCategoryItem from '@/app/components/ExpenseCategoryItem';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { useContext, useState, useEffect } from 'react';
+import { authContext } from './lib/store/auth-context';
 
 import {financeContext } from '@/app/lib/store/finance-context';
 
 import AddIncomeModal from '@/app/Modals/AddIncomeModal';
 import AddExpenseModal from '@/app/Modals/AddExpenseModal';
-import ViewExpense from '@/app/Modals/ViewExpense';
+import SignIn from '@/app/components/SignIn';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -19,12 +20,16 @@ export default function Home() {
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
   const [ balance, setBalance ] = useState(0);
   const { expenses, income } = useContext(financeContext);
+  const { user } = useContext(authContext);
 
   useEffect(() => {
     const newBalance = income.reduce((total, i) => { return total + i.amount }, 0) - expenses.reduce((total, e) => { return total + e.total }, 0);
     setBalance(newBalance);
   }, [ expenses, income ]);
   
+  if (!user) {
+    return <SignIn />
+  }
   return (
     <>
     <AddIncomeModal show={showAddIncomeModal} onClose={setShowAddIncomeModal} />
@@ -59,6 +64,7 @@ export default function Home() {
       </section>
       {/* Chart section */}
       <section className='py-6'>
+        <a id='stats'>
           <h3 className='text-2xl'>Stats</h3>
           <div className='w-1/2 mx-auto'>
           <Doughnut data={{
@@ -74,6 +80,7 @@ export default function Home() {
             ]
           }} />
           </div>
+          </a>
       </section>
     </main>
     </>

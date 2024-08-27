@@ -4,7 +4,6 @@ import { useState, createContext, useEffect } from "react";
 
 import { db } from '@/app/lib/firebase/index';
 import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-// import { it } from "node:test";
 
 export const financeContext = createContext({
     income: [],

@@ -10,6 +10,8 @@ import { financeContext } from "../lib/store/finance-context";
 import { db } from '@/app/lib/firebase/index';
 import { collection, addDoc, getDocs, doc, deleteDoc, Timestamp } from 'firebase/firestore';
 
+import { toast } from 'react-toastify';
+
 function AddIncomeModal({ show, onClose }) {
 
     const amountRef = useRef();
@@ -30,8 +32,10 @@ function AddIncomeModal({ show, onClose }) {
             await addIncomeItem(newIncome);
             amountRef.current.value = "";
             descriptionRef.current.value = "";
+            toast.success("Income category added!");
         } catch (error) {
             console.log(error.message);
+            toast.error(error.message);
         }
         
     };
@@ -40,8 +44,10 @@ function AddIncomeModal({ show, onClose }) {
       const deleteIncomeHandler = async (handlerId) => {
         try {
             await removeIncomeItem(handlerId);
+            toast.success("Income category deleted!");
         } catch (error) {
             console.log(error.message);
+            toast.error(error.message);
         }
       };
     
