@@ -6,6 +6,7 @@ import { authContext } from '../lib/store/auth-context';
 
 function SignIn() {
     const { googleLoginHandler } = useContext(authContext);
+    // need to work on it
   return (
     <main className='flex flex-col container max-w-2xl px-6 mx-auto'>
         <h1 className='mb-6 text-6xl font-bold text-center'>Welcome 👋</h1>
